@@ -1,0 +1,20 @@
+;;; -*- coding: utf-8 -*-
+(("/home/zaichu/piyo/C++/a.cpp" . 1752)
+ ("/home/zaichu/.emacs.d/init.d/init-programming.el" . 2250)
+ ("/home/zaichu/piyo/editor/.emacs.d/init.d/init-programming.el" . 2263)
+ ("/home/zaichu/piyo/C++/input.txt" . 8)
+ ("/home/zaichu/.emacs.d/init.el" . 441)
+ ("/home/zaichu/.emacs.d/"
+  (dired-filename . "/home/zaichu/.emacs.d/.."))
+ ("/home/zaichu/"
+  (dired-filename . "/home/zaichu/piyo"))
+ ("/home/zaichu/piyo/"
+  (dired-filename . "/home/zaichu/piyo/C++"))
+ ("/home/zaichu/piyo/C++/"
+  (dired-filename . "/home/zaichu/piyo/C++/make_script.sh"))
+ ("/home/zaichu/piyo/C++/make_script.sh" . 100)
+ ("/home/zaichu/.emacs.d/init.d/init-global-configs.el" . 1416)
+ ("/home/zaichu/.emacs.d/init.d/init-tabbar.el" . 1029)
+ ("/home/zaichu/.emacs.d/init.d/init-face.el" . 1452)
+ ("/home/zaichu/.emacs.d/personal.d/set-perl5lib.el" . 973)
+ ("/home/zaichu/piyo/Haskell/a.hs" . 49))
