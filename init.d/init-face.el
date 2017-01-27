@@ -53,6 +53,7 @@
 
             (column-number-mode 1)
             (setq frame-title-format '("%f"))
+            (set-frame-font "ricty-15.5")
 
             (show-paren-mode 1)
             (set-face-attribute 'show-paren-match-face nil :underline "red")

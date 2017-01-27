@@ -12,6 +12,7 @@
   (add-to-list 'ac-modes 'slim-mode)
   (add-to-list 'ac-modes 'js2-jsx-mode)
   (add-to-list 'ac-modes 'haskell-mode)
+  (add-to-list 'ac-modes 'rust-mode)
   (setq-default ac-sources
                 '(ac-source-abbrev
                   ac-source-dictionary

@@ -1,81 +1,110 @@
-(when (require 'powerline nil t)
-  (make-face 'powerline-active3)
-  (make-face 'powerline-inactive3)
-  (make-face 'powerline-major-mode-active)
-  (make-face 'powerline-major-mode-inactive)
-  (custom-set-faces
-   '(mode-line ((t (:foreground "#FFF"))))
-   '(mode-line-buffer-id ((t (:foreground "#0C1B4B"))))
-   '(powerline-active1 ((t (:background "#9AAFEF" :foreground "#0C1B4B" :inherit mode-line))))
-   '(powerline-active2 ((t (:background "#214CCF" :inherit mode-line))))
-   '(powerline-active3 ((t (:background "#0C1B4B" :inherit mode-line))))
-   '(powerline-major-mode-active ((t (:foreground "green" :inherit powerline-active3))))
-   '(mode-line-inactive ((t (:foreground "#AAA"))))
-   '(powerline-inactive1 ((t (:background "#CAD5F7" :inherit mode-line-inactive))))
-   '(powerline-inactive2 ((t (:background "#466DE2" :inherit mode-line-inactive))))
-   '(powerline-inactive3 ((t (:background "#142c7b" :inherit mode-line-inactive))))
-   '(powerline-major-mode-inactive ((t (:foreground "green" :inherit powerline-inactive3)))))
+;; Mode line setup
+(setq-default
+ mode-line-format
+ '(; Position, including warning for 80 columns
+   (:propertize "%4l:" face mode-line-position-face)
+   (:eval (propertize "%3c" 'face
+                      (if (>= (current-column) 80)
+                          'mode-line-80col-face
+                        'mode-line-position-face)))
+   ; emacsclient [default -- keep?]
+   mode-line-client
+   "  "
+   ; read-only or modified status
+   (:eval
+    (cond (buffer-read-only
+           (propertize " RO " 'face 'mode-line-read-only-face))
+          ((buffer-modified-p)
+           (propertize " ** " 'face 'mode-line-modified-face))
+          (t "      ")))
+   "    "
+   ; directory and buffer/file name
+   (:propertize (:eval (shorten-directory default-directory 30))
+                face mode-line-folder-face)
+   (:propertize "%b"
+                face mode-line-filename-face)
+   ; narrow [default -- keep?]
+   " %n "
+   ; mode indicators: vc, recursive edit, major mode, minor modes, process, global
+   (vc-mode vc-mode)
+   "  %["
+   (:propertize mode-name
+                face mode-line-mode-face)
+   "%] "
+   (:eval (propertize (format-mode-line minor-mode-alist)
+                      'face 'mode-line-minor-mode-face))
+   (:propertize mode-line-process
+                face mode-line-process-face)
+   (global-mode-string global-mode-string)
+   "    "
+   ; nyan-mode uses nyan cat as an alternative to %p
+   (:eval (when nyan-mode (list (nyan-create))))
+   ))
 
-  (defvar powerline-major-mode-color-success "green")
-  (defvar powerline-major-mode-color-error "red")
-  (defvar powerline-major-mode-color-warning "yellow")
-  (defvar powerline-major-mode-color-info "blue")
-  (defun update-powerline-major-mode-face ()
-    (let ((color (cond ((flycheck-has-current-errors-p 'error) powerline-major-mode-color-error)
-                       ((flycheck-has-current-errors-p 'warning) powerline-major-mode-color-warning)
-                       ((flycheck-has-current-errors-p 'info) powerline-major-mode-color-info)
-                       (t powerline-major-mode-color-success))))
-      (set-face-attribute 'powerline-major-mode-active nil :foreground color)
-      (set-face-attribute 'powerline-major-mode-inactive nil :foreground color)))
-  (add-hook 'flycheck-after-syntax-check-hook 'update-powerline-major-mode-face)
-  (add-hook 'flycheck-syntax-check-failed-hook 'update-powerline-major-mode-face)
+;; Helper function
+(defun shorten-directory (dir max-length)
+  "Show up to `max-length' characters of a directory name `dir'."
+  (let ((path (reverse (split-string (abbreviate-file-name dir) "/")))
+        (output ""))
+    (when (and path (equal "" (car path)))
+      (setq path (cdr path)))
+    (while (and path (< (length output) (- max-length 4)))
+      (setq output (concat (car path) "/" output))
+      (setq path (cdr path)))
+    (when path
+      (setq output (concat ".../" output)))
+    output))
 
-  (defun wc-line ()
-    (let ((chars (if (use-region-p) (abs (- (point) (mark))) (point-max)))
-          (words (if (use-region-p) (count-words-region (point) (mark)) (count-words-region (point-min) (point-max))))
-          (lines (if (use-region-p) (abs (- (line-number-at-pos (point)) (line-number-at-pos (mark)))) (line-number-at-pos (point-max)))))
-      (format "%d L | %d W | %d C " lines words chars)))
+;; Extra mode line faces
+(make-face 'mode-line-read-only-face)
+(make-face 'mode-line-modified-face)
+(make-face 'mode-line-folder-face)
+(make-face 'mode-line-filename-face)
+(make-face 'mode-line-position-face)
+(make-face 'mode-line-mode-face)
+(make-face 'mode-line-minor-mode-face)
+(make-face 'mode-line-process-face)
+(make-face 'mode-line-80col-face)
 
-  (setq-default mode-line-format
-                '("%e"
-                  (:eval
-                   (let* ((active (or (not (boundp 'powerline-selected-window)) (powerline-selected-window-active)))
-                          (mode-line (if active 'mode-line 'mode-line-inactive))
-                          (face1 (if active 'powerline-active1 'powerline-inactive1))
-                          (face2 (if active 'powerline-active2 'powerline-inactive2))
-                          (face3 (if active 'powerline-active3 'powerline-inactive3))
-                          (major-mode-face (if active 'powerline-major-mode-active 'powerline-major-mode-inactive))
-                          (separator-left (intern (format "powerline-%s-%s"
-                                                          powerline-default-separator
-                                                          (car powerline-default-separator-dir))))
-                          (separator-right (intern (format "powerline-%s-%s"
-                                                           powerline-default-separator
-                                                           (cdr powerline-default-separator-dir))))
-                          (lhs (list
-                                (powerline-raw "%*" face1 'l)
-                                (powerline-buffer-id face1 'l)
-                                (powerline-raw " " face1)
-                                (funcall separator-left face1 face2)
-                                (powerline-raw mode-line-mule-info face2 'l)
-                                (powerline-raw " " face2)
-                                (funcall separator-left face2 face3)
-                                (powerline-major-mode major-mode-face 'l)
-                                (powerline-narrow face3 'l)
-                                (powerline-raw " " face3)
-                                (funcall separator-left face3 mode-line)
-                                (powerline-vc mode-line 'r)
-                                (when (and (boundp 'which-func-mode) which-func-mode)
-                                  (powerline-raw which-func-format nil 'l))))
-                          (rhs (list
-                                (powerline-raw global-mode-string mode-line 'r)
-                                (powerline-raw (wc-line) mode-line 'r)
-                                (funcall separator-right mode-line face3)
-                                (powerline-raw "%4l:%3c" face3 'r)
-                                (funcall separator-right face3 face2)
-                                (powerline-raw " %6p" face2 'r)
-                                (powerline-hud mode-line face3))))
-                     (concat (powerline-render lhs)
-                             (powerline-fill mode-line (powerline-width rhs))
-                             (powerline-render rhs)))))))
+(set-face-attribute 'mode-line nil
+    :foreground "gray60" :background "gray20"
+    :inverse-video nil
+    :box '(:line-width 6 :color "gray20" :style nil))
+(set-face-attribute 'mode-line-inactive nil
+    :foreground "gray80" :background "gray40"
+    :inverse-video nil
+    :box '(:line-width 6 :color "gray40" :style nil))
 
+(set-face-attribute 'mode-line-read-only-face nil
+    :inherit 'mode-line-face
+    :foreground "#4271ae"
+    :box '(:line-width 2 :color "#4271ae"))
+(set-face-attribute 'mode-line-modified-face nil
+    :inherit 'mode-line-face
+    :foreground "#c82829"
+    :background "#ffffff"
+    :box '(:line-width 2 :color "#c82829"))
+(set-face-attribute 'mode-line-folder-face nil
+    :inherit 'mode-line-face
+    :foreground "gray60")
+(set-face-attribute 'mode-line-filename-face nil
+    :inherit 'mode-line-face
+    :foreground "#eab700"
+    :weight 'bold)
+(set-face-attribute 'mode-line-position-face nil
+    :inherit 'mode-line-face
+    :family "Menlo" :height 100)
+(set-face-attribute 'mode-line-mode-face nil
+    :inherit 'mode-line-face
+    :foreground "gray80")
+(set-face-attribute 'mode-line-minor-mode-face nil
+    :inherit 'mode-line-mode-face
+    :foreground "gray40"
+    :height 110)
+(set-face-attribute 'mode-line-process-face nil
+    :inherit 'mode-line-face
+    :foreground "#718c00")
+(set-face-attribute 'mode-line-80col-face nil
+    :inherit 'mode-line-position-face
+    :foreground "black" :background "#eab700")
 (provide 'init-modeline)

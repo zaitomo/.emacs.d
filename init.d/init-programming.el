@@ -27,6 +27,7 @@
                                                    slim-mode
                                                    latex-mode
                                                    python-mode
+                                                   rust-mode
                                                    yaml-mode))
                                (electric-indent-mode -1)
                                (local-set-key (kbd "RET") 'newline-and-indent))
@@ -74,6 +75,7 @@
             (require 'init-auto-complete)
             (require 'init-cc)
             (require 'init-ruby)
+            ;(require 'init-rust)
             (require 'init-js)
             (require 'init-sh)
             (require 'init-tex)

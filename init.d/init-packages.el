@@ -15,6 +15,7 @@
     auto-complete
     auto-complete-clang
     benchmark-init
+    cargo
     coffee-mode
     company
     company-ghc
@@ -26,9 +27,11 @@
     exec-path-from-shell
     expand-region
     feature-mode
+    racer
     flycheck
     flycheck-d-unittest
     flycheck-tip
+    flycheck-rust
     ghc
     git-gutter
     git-gutter-fringe
@@ -57,6 +60,8 @@
     recentf-ext
     region-bindings-mode
     ruby-block
+    rustfmt
+    rust-mode
     sass-mode
     scss-mode
     sequential-command
