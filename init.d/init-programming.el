@@ -81,6 +81,7 @@
             (require 'init-haml)
             (require 'init-perl)
             (require 'init-haskell)
-            (require 'init-programming-contest)))
+            ;;(require 'init-programming-contest)
+            (require 'init-quickrun)))
 
 (provide 'init-programming)

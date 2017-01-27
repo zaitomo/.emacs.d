@@ -51,6 +51,7 @@
     popwin
     powerline
     projectile
+    quickrun
     rainbow-delimiters
     rbenv
     recentf-ext
@@ -66,7 +67,7 @@
     smooth-scroll
     smooth-scrolling
     typescript
-;;    tabbar
+    tabbar
     textmate
     undo-tree
     undohist
